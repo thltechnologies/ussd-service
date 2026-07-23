@@ -1,3 +1,15 @@
+## 0.2.2
+
+- Reverted legacy slot configurations in `sendUssdRequestLegacy` to address dialing stability issues.
+- Simplified and improved the layout gravity and view placement in `UssdOverlayService`.
+
+## 0.2.1
+
+- Automatic fallback for non-standard USSD syntax (e.g. `#101#451#`) in single-session requests to bypass Android `USSD_RETURN_FAILURE` limitations.
+- Automatic native dialog dismissal (`dismissActiveDialog`) after capturing USSD responses via Accessibility Service.
+- Integrated overlay service for single-session requests to mask system dialogs during execution.
+- Added `singleSessionMode` flag to reliably handle overlay teardown and popup cleanup.
+
 ## 0.2.0
 
 - Integrated `ussd_launcher` features into `thl_ussd_service` under a unified API surface.
