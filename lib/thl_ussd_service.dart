@@ -34,11 +34,13 @@ class UssdService {
   static Future<String?> sendUssdRequest({
     required String ussdCode,
     required int subscriptionId,
+    bool hideDialog = true,
   }) async {
     try {
       final String? response = await _channel.invokeMethod('sendUssdRequest', {
         'ussdCode': ussdCode,
         'subscriptionId': subscriptionId,
+        'hideDialog': hideDialog,
       });
       return response;
     } on PlatformException catch (e) {
@@ -62,6 +64,7 @@ class UssdService {
     int? initialDelayMs,
     int? optionDelayMs,
     String? overlayMessage,
+    bool hideDialog = true,
   }) async {
     try {
       await _channel.invokeMethod('multisessionUssd', {
@@ -71,6 +74,7 @@ class UssdService {
         if (initialDelayMs != null) 'initialDelayMs': initialDelayMs,
         if (optionDelayMs != null) 'optionDelayMs': optionDelayMs,
         if (overlayMessage != null) 'overlayMessage': overlayMessage,
+        'hideDialog': hideDialog,
       });
     } on PlatformException catch (e) {
       print("UssdService: Error in multi-session USSD: ${e.message}");
