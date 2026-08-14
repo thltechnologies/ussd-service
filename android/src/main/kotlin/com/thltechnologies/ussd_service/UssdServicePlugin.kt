@@ -1,4 +1,4 @@
-package com.thltechnologies.ussd_service
+﻿package com.thltechnologies.ussd_service
 
 import android.Manifest.permission
 import android.content.Context
@@ -162,12 +162,14 @@ class UssdServicePlugin : FlutterPlugin, MethodCallHandler {
         
         val ussdCode = call.argument<String>("ussdCode")
         val subscriptionId = call.argument<Int>("subscriptionId") ?: -1
+        val hideDialog = call.argument<Boolean>("hideDialog") ?: true
         
         if (ussdCode.isNullOrEmpty()) {
             result.error("INVALID_ARGUMENT", "USSD code is required", null)
             return
         }
         
+        ussdMultiSession.setHideDialogs(hideDialog)
         ussdSessionUnique.sendUssdRequest(ussdCode, subscriptionId, result)
     }
 
@@ -186,6 +188,7 @@ class UssdServicePlugin : FlutterPlugin, MethodCallHandler {
         val slotIndex = call.argument<Int>("slotIndex") ?: 0
         val options = call.argument<List<String>>("options") ?: emptyList()
         val overlayMessage = call.argument<String>("overlayMessage")
+        val hideDialog = call.argument<Boolean>("hideDialog") ?: true
         
         call.argument<Int>("initialDelayMs")?.let { 
             ussdMultiSession.initialDelayMs = it.toLong() 
@@ -207,7 +210,7 @@ class UssdServicePlugin : FlutterPlugin, MethodCallHandler {
             ussdCode, 
             slotIndex, 
             options, 
-            UssdMultiSession.createDefaultHashMap(), 
+            UssdMultiSession.createDefaultHashMap(),
             object : UssdMultiSession.CallbackInvoke {
                 override fun responseInvoke(message: String) {
                     onUssdResult(message)
@@ -216,7 +219,8 @@ class UssdServicePlugin : FlutterPlugin, MethodCallHandler {
                     onUssdResult(message)
                     result.success(null)
                 }
-            }
+            },
+            hideDialog
         )
     }
 
@@ -254,3 +258,4 @@ class UssdServicePlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 }
+

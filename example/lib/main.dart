@@ -8,7 +8,7 @@ import 'package:thl_ussd_service/thl_ussd_service.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 class UssdDemoPage extends StatefulWidget {
-  const UssdDemoPage({Key? key}) : super(key: key);
+  const UssdDemoPage({super.key});
 
   @override
   _UssdDemoPageState createState() => _UssdDemoPageState();
@@ -45,13 +45,16 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
   bool _isAccessibilityEnabled = false;
   bool _isOverlayPermissionGranted = false;
   List<Map<String, dynamic>> _simCards = [];
-  
+
   int _selectedSimSubscriptionId = 0;
   int _selectedSimSlotIndex = 0;
-  
-  final TextEditingController _codeController = TextEditingController(text: '*123#');
-  final TextEditingController _optionsController = TextEditingController(text: '1, 2, 3');
-  final TextEditingController _overlayMessageController = TextEditingController(text: 'USSD session running...');
+
+  final TextEditingController _codeController =
+      TextEditingController(text: '*123#');
+  final TextEditingController _optionsController =
+      TextEditingController(text: '1, 2, 3');
+  final TextEditingController _overlayMessageController =
+      TextEditingController(text: 'USSD session running...');
 
   bool _loading = false;
   String _statusMessage = 'Ready';
@@ -80,10 +83,10 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
   Future<void> _checkStatusAndSims() async {
     final access = await UssdService.isAccessibilityEnabled();
     final overlay = await UssdService.isOverlayPermissionGranted();
-    
+
     await Permission.phone.request();
     final sims = await UssdService.getSimCards();
-    
+
     setState(() {
       _isAccessibilityEnabled = access;
       _isOverlayPermissionGranted = overlay;
@@ -103,11 +106,12 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
     });
 
     final code = _codeController.text.trim();
-    
+
     try {
       if (_ussdMode == UssdMode.silent) {
         _statusMessage = 'Running silent request...';
-        final response = await UssdService.makeRequest(_selectedSimSubscriptionId, code);
+        final response =
+            await UssdService.makeRequest(_selectedSimSubscriptionId, code);
         setState(() {
           _statusMessage = 'Success';
           _messageLogs.add('Response: $response');
@@ -130,19 +134,19 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
           throw Exception("Accessibility Service must be enabled in settings.");
         }
         _statusMessage = 'Running multi-session automation...';
-        
+
         final optionsString = _optionsController.text.trim();
-        final options = optionsString.isNotEmpty 
+        final options = optionsString.isNotEmpty
             ? optionsString.split(',').map((e) => e.trim()).toList()
             : <String>[];
-            
+
         await UssdService.multisessionUssd(
           code: code,
           slotIndex: _selectedSimSlotIndex,
           options: options,
           overlayMessage: _overlayMessageController.text.trim(),
         );
-        
+
         setState(() {
           _statusMessage = 'Automation finished / Completed';
         });
@@ -189,7 +193,11 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Permissions & Services', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const Text('Permissions & Services',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue)),
                     const SizedBox(height: 12),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -198,8 +206,12 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                         Row(
                           children: [
                             Icon(
-                              _isAccessibilityEnabled ? Icons.check_circle : Icons.error,
-                              color: _isAccessibilityEnabled ? Colors.green : Colors.red,
+                              _isAccessibilityEnabled
+                                  ? Icons.check_circle
+                                  : Icons.error,
+                              color: _isAccessibilityEnabled
+                                  ? Colors.green
+                                  : Colors.red,
                             ),
                             const SizedBox(width: 8),
                             ElevatedButton(
@@ -220,8 +232,12 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                         Row(
                           children: [
                             Icon(
-                              _isOverlayPermissionGranted ? Icons.check_circle : Icons.warning,
-                              color: _isOverlayPermissionGranted ? Colors.green : Colors.orange,
+                              _isOverlayPermissionGranted
+                                  ? Icons.check_circle
+                                  : Icons.warning,
+                              color: _isOverlayPermissionGranted
+                                  ? Colors.green
+                                  : Colors.orange,
                             ),
                             const SizedBox(width: 8),
                             ElevatedButton(
@@ -239,7 +255,7 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // SIM selector
             Card(
               elevation: 4,
@@ -248,26 +264,35 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('SIM Card Selection', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const Text('SIM Card Selection',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue)),
                     const SizedBox(height: 12),
                     if (_simCards.isEmpty)
-                      const Text('No SIM cards detected or permissions missing. Click refresh at the top.')
+                      const Text(
+                          'No SIM cards detected or permissions missing. Click refresh at the top.')
                     else
                       DropdownButtonFormField<int>(
-                        value: _selectedSimSubscriptionId,
-                        decoration: const InputDecoration(labelText: 'Select SIM'),
+                        initialValue: _selectedSimSubscriptionId,
+                        decoration:
+                            const InputDecoration(labelText: 'Select SIM'),
                         items: _simCards.map((sim) {
                           return DropdownMenuItem<int>(
                             value: sim['subscriptionId'],
-                            child: Text('[Slot ${sim['slotIndex']}] ${sim['displayName']} (${sim['carrierName']})'),
+                            child: Text(
+                                '[Slot ${sim['slotIndex']}] ${sim['displayName']} (${sim['carrierName']})'),
                           );
                         }).toList(),
                         onChanged: (val) {
                           if (val != null) {
-                            final selected = _simCards.firstWhere((element) => element['subscriptionId'] == val);
+                            final selected = _simCards.firstWhere(
+                                (element) => element['subscriptionId'] == val);
                             setState(() {
                               _selectedSimSubscriptionId = val;
-                              _selectedSimSlotIndex = selected['slotIndex'] ?? 0;
+                              _selectedSimSlotIndex =
+                                  selected['slotIndex'] ?? 0;
                             });
                           }
                         },
@@ -286,25 +311,34 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Execution Mode', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const Text('Execution Mode',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue)),
                     const SizedBox(height: 12),
                     RadioListTile<UssdMode>(
                       title: const Text('Silent Request (TelephonyManager)'),
-                      subtitle: const Text('Completely silent. Android 8+. Only standard *...# codes.'),
+                      subtitle: const Text(
+                          'Completely silent. Android 8+. Only standard *...# codes.'),
                       value: UssdMode.silent,
                       groupValue: _ussdMode,
                       onChanged: (val) => setState(() => _ussdMode = val!),
                     ),
                     RadioListTile<UssdMode>(
-                      title: const Text('Interactive Single Request (Accessibility)'),
-                      subtitle: const Text('Launches Dialer. Works with #101#451#.'),
+                      title: const Text(
+                          'Interactive Single Request (Accessibility)'),
+                      subtitle:
+                          const Text('Launches Dialer. Works with #101#451#.'),
                       value: UssdMode.interactiveSingle,
                       groupValue: _ussdMode,
                       onChanged: (val) => setState(() => _ussdMode = val!),
                     ),
                     RadioListTile<UssdMode>(
-                      title: const Text('Interactive Multi-step Request (Accessibility)'),
-                      subtitle: const Text('Sends multiple menu options sequentially.'),
+                      title: const Text(
+                          'Interactive Multi-step Request (Accessibility)'),
+                      subtitle: const Text(
+                          'Sends multiple menu options sequentially.'),
                       value: UssdMode.interactiveMulti,
                       groupValue: _ussdMode,
                       onChanged: (val) => setState(() => _ussdMode = val!),
@@ -323,7 +357,11 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Parameters', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue)),
+                    const Text('Parameters',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue)),
                     const SizedBox(height: 12),
                     TextField(
                       controller: _codeController,
@@ -366,13 +404,16 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                 backgroundColor: const Color(0xFF1976D2),
                 foregroundColor: Colors.white,
               ),
-              child: _loading 
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                : const Text('Execute USSD', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: _loading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                          color: Colors.white, strokeWidth: 2),
+                    )
+                  : const Text('Execute USSD',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 24),
 
@@ -387,18 +428,29 @@ class _UssdDemoPageState extends State<UssdDemoPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Status Logs', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                        Text(_statusMessage, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                        const Text('Status Logs',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey)),
+                        Text(_statusMessage,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue)),
                       ],
                     ),
                     const Divider(height: 24, color: Colors.grey),
                     if (_messageLogs.isEmpty)
-                      const Text('No activity yet. Run a code to see responses here.', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey))
+                      const Text(
+                          'No activity yet. Run a code to see responses here.',
+                          style: TextStyle(
+                              fontStyle: FontStyle.italic, color: Colors.grey))
                     else
                       ..._messageLogs.map((log) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Text(log, style: const TextStyle(fontFamily: 'monospace')),
-                      )),
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: Text(log,
+                                style:
+                                    const TextStyle(fontFamily: 'monospace')),
+                          )),
                   ],
                 ),
               ),

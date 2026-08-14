@@ -22,10 +22,11 @@ class UssdMultiSession(private val context: Context) {
     var optionDelayMs: Long = 2500
     var replyDelayMs: Long = 3000
     
-    var overlayMessage: String = "Opération USSD en cours..."
+    var overlayMessage: String = "OpÃ©ration USSD en cours..."
     
     private var totalOptionsToSend = 0
     private var optionsSentSuccessfully = 0
+    var hideDialog: Boolean = true
 
     companion object {
         private const val KEY_ERROR = "KEY_ERROR"
@@ -33,7 +34,7 @@ class UssdMultiSession(private val context: Context) {
         
         fun createDefaultHashMap(): HashMap<String, HashSet<String>> {
             return hashMapOf(
-                KEY_ERROR to hashSetOf("error", "failed", "invalid", "échec", "erreur"),
+                KEY_ERROR to hashSetOf("error", "failed", "invalid", "Ã©chec", "erreur"),
                 KEY_LOGIN to hashSetOf("login", "password", "pin", "code")
             )
         }
@@ -43,7 +44,8 @@ class UssdMultiSession(private val context: Context) {
         str: String, 
         simSlot: Int, 
         hashMap: HashMap<String, HashSet<String>>, 
-        callbackInvoke: CallbackInvoke
+        callbackInvoke: CallbackInvoke,
+        hideDialog: Boolean = true
     ) {
         this.callbackInvoke = callbackInvoke
         this.map = hashMap
@@ -59,7 +61,8 @@ class UssdMultiSession(private val context: Context) {
         simSlot: Int, 
         options: List<String>, 
         hashMap: HashMap<String, HashSet<String>>, 
-        callbackInvoke: CallbackInvoke
+        callbackInvoke: CallbackInvoke,
+        hideDialog: Boolean = true
     ) {
         this.callbackInvoke = callbackInvoke
         this.map = hashMap
@@ -67,6 +70,7 @@ class UssdMultiSession(private val context: Context) {
         this.ussdOptionsQueue.addAll(options)
         this.totalOptionsToSend = options.size
         this.optionsSentSuccessfully = 0
+        this.hideDialog = hideDialog
         
         println("UssdMultiSession: Starting multi-session USSD - options: $options")
         
@@ -83,7 +87,8 @@ class UssdMultiSession(private val context: Context) {
         str: String, 
         simSlot: Int, 
         hashMap: HashMap<String, HashSet<String>>, 
-        callbackInvoke: CallbackInvoke
+        callbackInvoke: CallbackInvoke,
+        hideDialog: Boolean = true
     ) {
         this.callbackInvoke = callbackInvoke
         this.map = hashMap
@@ -113,8 +118,10 @@ class UssdMultiSession(private val context: Context) {
             val uri = Uri.parse("tel:$ussdCode")
             
             this.isRunning = true
-            setHideDialogs(true)
-            startOverlay(overlayMessage)
+            setHideDialogs(this.hideDialog)
+            if (this.hideDialog) {
+                startOverlay(overlayMessage)
+            }
             
             context.startActivity(getActionCallIntent(uri, simSlot))
 
@@ -136,7 +143,8 @@ class UssdMultiSession(private val context: Context) {
             }
         } else {
             println("UssdMultiSession: All options processed, waiting for final response...")
-            Handler(Looper.getMainLooper()).postDelayed({
+            if (this.hideDialog) {
+                // Wait for the final operator dialog to appear and be read before ending session
                 Handler(Looper.getMainLooper()).postDelayed({
                     try {
                         cancelSession()
@@ -145,8 +153,10 @@ class UssdMultiSession(private val context: Context) {
                     } catch (e: Exception) {
                         this.callbackInvoke?.over("SESSION_END_ERROR: ${e.message}")
                     }
-                }, 2000)
-            }, optionDelayMs)
+                }, 2500)
+            } else {
+                println("UssdMultiSession: Interactive mode (hideDialog=false). Keeping session active for manual user input.")
+            }
         }
     }
 
@@ -250,7 +260,7 @@ class UssdMultiSession(private val context: Context) {
         if (isRunning) {
             isRunning = false
             setHideDialogs(false)
-            stopOverlay()
+                    if (this.hideDialog) { stopOverlay() }
             
             try {
                 UssdAccessibilityService.cancelSession()
@@ -299,3 +309,4 @@ class UssdMultiSession(private val context: Context) {
         fun over(message: String)
     }
 }
+

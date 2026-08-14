@@ -1,3 +1,9 @@
+## 0.2.3
+
+- Added `hideDialog` parameter to `sendUssdRequest` and `multisessionUssd` to control the visibility of native USSD system dialogs.
+- Updated Kotlin native service (`UssdAccessibilityService`, `UssdServicePlugin`, `ussd_multi_session_controller`) to dynamically toggle native dialog hiding based on `hideDialog`.
+- Updated example application UI to allow toggling native USSD dialog visibility during execution.
+
 ## 0.2.0
 
 - Integrated `ussd_launcher` features into `thl_ussd_service` under a unified API surface.

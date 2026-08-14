@@ -21,6 +21,7 @@ class UssdAccessibilityService : AccessibilityService() {
         private var retryCount = 0
         private var isDialogReady = false
         private var lastDialogDetectedTime = 0L
+        private var wasInUssdWindow = false
         
         // Optimized retries with faster response when dialog is detected
         private const val MAX_RETRIES = 10
