@@ -44,7 +44,6 @@ class UssdService {
       });
       return response;
     } on PlatformException catch (e) {
-      print("UssdService: Error sending USSD request: ${e.message}");
       rethrow;
     }
   }
@@ -77,7 +76,6 @@ class UssdService {
         'hideDialog': hideDialog,
       });
     } on PlatformException catch (e) {
-      print("UssdService: Error in multi-session USSD: ${e.message}");
       rethrow;
     }
   }
