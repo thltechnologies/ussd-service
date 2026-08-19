@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "thl_ussd_service",
-      "version": "0.2.2",
+      "version": "0.3.0",
       "dependencies": [
         "flutter"
       ],

@@ -1,6 +1,6 @@
 name: thl_ussd_service
 description: A Flutter plugin to make silent USSD requests and read their responses, using Android's sendUssdRequest. iOS is not supported. Upgraded fork of ussd_service.
-version: 0.2.3
+version: 0.3.0
 repository: https://github.com/thltechnologies/ussd-service
 issue_tracker: https://github.com/thltechnologies/ussd-service/issues
 

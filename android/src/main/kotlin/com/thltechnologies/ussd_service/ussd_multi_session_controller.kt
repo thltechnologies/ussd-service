@@ -142,21 +142,7 @@ class UssdMultiSession(private val context: Context) {
                 sendUssdOption(nextOption)
             }
         } else {
-            println("UssdMultiSession: All options processed, waiting for final response...")
-            if (this.hideDialog) {
-                // Wait for the final operator dialog to appear and be read before ending session
-                Handler(Looper.getMainLooper()).postDelayed({
-                    try {
-                        cancelSession()
-                        stopOverlay()
-                        this.callbackInvoke?.over("SESSION_COMPLETED")
-                    } catch (e: Exception) {
-                        this.callbackInvoke?.over("SESSION_END_ERROR: ${e.message}")
-                    }
-                }, 2500)
-            } else {
-                println("UssdMultiSession: Interactive mode (hideDialog=false). Keeping session active for manual user input.")
-            }
+            println("UssdMultiSession: All automated options processed. Keeping session open for interactive flow or final response...")
         }
     }
 
@@ -259,11 +245,9 @@ class UssdMultiSession(private val context: Context) {
     fun cancelSession(result: Result? = null) {
         if (isRunning) {
             isRunning = false
-            setHideDialogs(false)
-                    if (this.hideDialog) { stopOverlay() }
-            
             try {
                 UssdAccessibilityService.cancelSession()
+                if (this.hideDialog) { stopOverlay() }
                 result?.success(null)
             } catch (e: Exception) {
                 result?.error("CANCEL_ERROR", "Error cancelling session: ${e.message}", null)

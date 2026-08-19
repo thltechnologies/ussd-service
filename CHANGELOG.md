@@ -1,3 +1,12 @@
+## 0.3.0
+
+- Added smart detection for intermediate prompt dialogs vs. terminal receipt dialogs (`isPromptDialogContent` and `isTerminalDialogContent`).
+- Improved `hideDialog` behavior to only auto-dismiss native dialogs upon detecting a confirmed terminal/final receipt message, keeping intermediate prompts open for user interaction.
+- Added `PROMPT_DIALOG:` response prefix for interactive screens with input fields.
+- Added dynamic keyboard (IME) and system package filtering via `InputMethodManager` to prevent false session completion while the user is typing.
+- Enhanced native dialog dismissal with multi-strategy fallback (standard button IDs, button labels, and system back action) and automatic host app foregrounding (`bringAppToFront`).
+- Optimized `UssdMultiSession` to keep sessions open for interactive user input after automated options are processed instead of prematurely terminating.
+
 ## 0.2.3
 
 - Added `hideDialog` parameter to `sendUssdRequest` and `multisessionUssd` to control the visibility of native USSD system dialogs.
